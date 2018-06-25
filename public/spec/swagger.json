@@ -1,0 +1,161 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Moleskine ICR API",
+    "description": "API service used for handwriting transcriptions",
+    "version": "1.0.0"
+  },
+  "host": "/",
+  "schemes": [
+    "https"
+  ],
+  "basePath": "/v0",
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/transcribe": {
+      "post": {
+        "summary": "Base Transcription",
+        "description": "Send a URL of an image to the transcription services",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "notebookPage",
+            "description": "URL of the notebook page's image.",
+            "schema": {
+              "$ref": "#/definitions/NotebookPages"
+            }
+          }
+        ],
+        "tags": [
+          "Transcription"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful transcription.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Transcription"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/upload-page": {
+      "post": {
+        "summary": "Used for uploading images and transcription.",
+        "description": "tk\n",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "upload",
+            "type": "file",
+            "description": "tk"
+          }
+        ],
+        "tags": [
+          "Transcription"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucessful transcription.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Transcription"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Transcription": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "description": "GUID matching Smart /N"
+        }
+      }
+    },
+    "NotebookPages": {
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "type": "string",
+          "description": "tk"
+        },
+        "provider": {
+          "type": "array",
+          "description": "tk",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nlp": {
+          "type": "boolean",
+          "description": "tk"
+        },
+        "language": {
+          "type": "string",
+          "description": "tk"
+        },
+        "user": {
+          "type": "object",
+          "description": "tk"
+        },
+        "origin": {
+          "type": "string",
+          "description": "tk"
+        }
+      }
+    },
+    "Image": {
+      "type": "object",
+      "properties": {
+        "img": {
+          "type": "string",
+          "description": "tk"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
