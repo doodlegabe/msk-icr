@@ -96,6 +96,11 @@ typings/
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+# Markdown plugin
+.idea/markdown-exported-files.xml
+.idea/markdown-navigator.xml
+.idea/markdown-navigator/profiles_settings.xml
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
@@ -133,10 +138,11 @@ fabric.properties
 ### WebStorm Patch ###
 # Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
 
-# *.iml
-# modules.xml
-# .idea/misc.xml
-# *.ipr
+*.iml
+modules.xml
+.idea/misc.xml
+*.ipr
+vcs.xml
 
 # Sonarlint plugin
 .idea/sonarlint
