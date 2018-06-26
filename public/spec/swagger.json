@@ -57,6 +57,34 @@
           }
         ]
       }
+    },
+    "/transcribe":{
+      "post":{
+        "tags": [
+          "transcription",
+          "provider"
+        ],
+        "summary": "Transcribes a photographed Moleskine Page.",
+        "description": "Takes the request for a given image URI and provider and provides a transcription.",
+        "operationId": "getTranscription",
+        "produces":[
+          "application/json"
+        ],
+        "responses":{
+          "200":{
+            "description": "Successful transcription",
+            "schema":{
+              "type":"array",
+              "items": {
+                "$ref": "#/definitions/Transcription"
+              }
+            }
+          },
+          "500":{
+            "description": "Error"
+          }
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -97,6 +125,19 @@
         "active": {
           "type": "boolean",
           "description": "Whether provider is currently active."
+        }
+      }
+    },
+    "Transcription":{
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string",
+          "description": "API id for each provider passed during transcription."
+        },
+        "result":{
+          "type":"string",
+          "description": "TETD"
         }
       }
     }
