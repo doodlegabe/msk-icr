@@ -16,9 +16,13 @@ app.use(favicon('src/assets/favicons/favicon.ico'));
  * Routes
  */
 app.get('/providers', routes.provider.getProviders);
+app.post('/transcribe', routes.transcribe.doTranscribe);
 
-app.listen(port, () => {
-  console.log('listening on ' + port);
-});
 
+if(!module.parent){
+  app.listen(port, ()=>{
+    console.log('listening on ' + port);
+  });
+}
+module.exports = app;
 
