@@ -1,159 +1,102 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Moleskine ICR API",
     "description": "API service used for handwriting transcriptions",
-    "version": "1.0.0"
+    "version": "0.0.0",
+    "title": "Moleskine ICR API",
+    "contact": {
+      "email": "gabriel.walsh@moleskine.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
   },
-  "host": "/",
+  "host": "msk-icr.herokuapp.com",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "provider",
+      "description": "Cloud-based ICR and NLP providers."
+    }
+  ],
   "schemes": [
     "https"
   ],
-  "basePath": "/v0",
-  "produces": [
-    "application/json"
-  ],
   "paths": {
-    "/transcribe": {
-      "post": {
-        "summary": "Base Transcription",
-        "description": "Send a URL of an image to the transcription services",
-        "consumes": [
+    "/get-providers": {
+      "get": {
+        "tags": [
+          "provider"
+        ],
+        "summary": "List Providers",
+        "description": "Shows the current ICR and NLP providers.",
+        "operationId": "getProviders",
+        "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "notebookPage",
-            "description": "URL of the notebook page's image.",
-            "schema": {
-              "$ref": "#/definitions/NotebookPages"
-            }
-          }
-        ],
-        "tags": [
-          "Transcription"
-        ],
         "responses": {
           "200": {
-            "description": "Successful transcription.",
+            "description": "successful listing",
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/Transcription"
+                "$ref": "#/definitions/Provider"
               }
             }
           },
-          "default": {
-            "description": "Unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+          "400": {
+            "description": "Invalid status value"
           }
-        }
-      }
-    },
-    "/upload-page": {
-      "post": {
-        "summary": "Used for uploading images and transcription.",
-        "description": "tk\n",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
+        },
+        "security": [
           {
-            "in": "formData",
-            "name": "upload",
-            "type": "file",
-            "description": "tk"
+            "user_auth": [
+              "read:providers"
+            ]
           }
-        ],
-        "tags": [
-          "Transcription"
-        ],
-        "responses": {
-          "200": {
-            "description": "Sucessful transcription.",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Transcription"
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
+        ]
       }
     }
   },
+  "securityDefinitions": {
+    "user_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "https://msk-icr.herokuapp.com/oauth/providers",
+      "flow": "implicit",
+      "scopes": {
+        "read:providers": "lists providers"
+      }
+    },
+    "api_key": {
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "header"
+    }
+  },
   "definitions": {
-    "Transcription": {
+    "Provider": {
       "type": "object",
       "properties": {
-        "product_id": {
+        "apiId": {
           "type": "string",
-          "description": "GUID matching Smart /N"
-        }
-      }
-    },
-    "NotebookPages": {
-      "type": "object",
-      "properties": {
-        "imageUri": {
+          "description": "API id for each provider passed during transcription."
+        },
+        "name": {
           "type": "string",
-          "description": "tk"
+          "description": "Name of ICR or NLP Provider"
         },
-        "provider": {
-          "type": "array",
-          "description": "tk",
-          "items": {
-            "type": "string"
-          }
+        "description": {
+          "type": "string",
+          "description": "Description of ICR or NLP Provider"
         },
-        "nlp": {
+        "documentation": {
+          "type": "string",
+          "format": "URL to further documentation"
+        },
+        "active": {
           "type": "boolean",
-          "description": "tk"
-        },
-        "language": {
-          "type": "string",
-          "description": "tk"
-        },
-        "user": {
-          "type": "object",
-          "description": "tk"
-        },
-        "origin": {
-          "type": "string",
-          "description": "tk"
-        }
-      }
-    },
-    "Image": {
-      "type": "object",
-      "properties": {
-        "img": {
-          "type": "string",
-          "description": "tk"
-        }
-      }
-    },
-    "Error": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string"
-        },
-        "fields": {
-          "type": "string"
+          "description": "Whether provider is currently active."
         }
       }
     }

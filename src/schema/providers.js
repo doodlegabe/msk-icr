@@ -9,8 +9,7 @@ const providerList = [
   {
     apiId: "flexi",
     name: "Flexicapture",
-    description:"\n" +
-    "ABBYY FlexiCapture is a highly scalable platform for intelligent data and document capture which can be successfully used to extract data from unstructured as well as structured paper documents, scans, e-mail messages, and other sources for subsequent use in document management systems. The four basic data extraction operations in ABBYY FlexiCapture include classification, optical recognition, verification, and export to ERP, ECM or BPM systems.",
+    description:"ABBYY FlexiCapture is a highly scalable platform for intelligent data and document capture which can be successfully used to extract data from unstructured as well as structured paper documents, scans, e-mail messages, and other sources for subsequent use in document management systems. The four basic data extraction operations in ABBYY FlexiCapture include classification, optical recognition, verification, and export to ERP, ECM or BPM systems.",
     documentation: "http://help.abbyy.com/en-us/flexicapture/12/developer/introduction_ag",
     active: true
   },

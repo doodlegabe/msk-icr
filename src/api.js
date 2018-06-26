@@ -4,8 +4,6 @@ import bodyParser from 'body-parser';
 import routes from './routes/index';
 import favicon from 'serve-favicon';
 
-
-
 const app = express();
 const port = process.env.PORT || 5050;
 

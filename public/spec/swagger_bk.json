@@ -1,0 +1,187 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Moleskine ICR API",
+    "description": "API service used for handwriting transcriptions",
+    "version": "1.0.0"
+  },
+  "host": "msk-icr.herokuapp.com",
+  "schemes": [
+    "https"
+  ],
+  "basePath": "/",
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/transcribe": {
+      "post": {
+        "summary": "Base Transcription",
+        "description": "Send a URL of an image to the transcription services",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "notebookPage",
+            "description": "URL of the notebook page's image.",
+            "schema": {
+              "$ref": "#/definitions/NotebookPages"
+            }
+          }
+        ],
+        "tags": [
+          "Transcription"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful transcription.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Transcription"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/upload": {
+      "post": {
+        "summary": "Used for uploading images.",
+        "description": "Uploads images to ...  tk",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "upload",
+            "type": "file",
+            "description": "binary of image file",
+            "schema":{
+              "$ref": "#/definitions/Images"
+            }
+          }
+        ],
+        "tags": [
+          "Transcription"
+        ],
+        "responses": {
+          "200": {
+            "description": "Image Uploaded.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Uploads"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Transcription": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "description": ""
+        }
+      }
+    },
+    "NotebookPages": {
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "type": "string",
+          "description": "URI to image file being transcribed."
+        },
+        "provider": {
+          "type": "array",
+          "description": "An array of provider IDs that determine which services are used for transcription. Default is all providers.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nlp": {
+          "type": "boolean",
+          "description": "Whether to use Natural Language processing on the results of transcription."
+        },
+        "language": {
+          "type": "string",
+          "description": "ISO 639-2 Code"
+        },
+        "user": {
+          "type": "object",
+          "description": "Attributes of user attempting transcription.",
+          "schema": {
+            "$ref": "#/definitions/Users"
+          }
+        },
+        "origin": {
+          "type": "string",
+          "description": "tk"
+        }
+      }
+    },
+    "Users" : {
+      "type": "object",
+      "properties": {
+        "userId":{
+          "type": "string",
+          "description" : "Moleskine ID of the user."
+        },
+        "authToken": "string",
+        "description" : "tk"
+      }
+    },
+    "Uploads" : {
+      "type" : "object",
+      "properties":{
+        "file": {
+          "type": "binary",
+          "description" : "File being uploaded"
+        }
+      }
+    },
+    "Images": {
+      "type": "object",
+      "properties": {
+        "img": {
+          "type": "string",
+          "description": "tk"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
