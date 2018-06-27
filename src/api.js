@@ -18,6 +18,10 @@ app.use(favicon('src/assets/favicons/favicon.ico'));
 
 app.get('/providers', routes.provider.getProviders);
 app.post('/transcribe', routes.transcribe.doTranscribe);
+/**
+ * Images
+ */
+app.post('/image/:id', routes.image.getImage);
 app.post('/image/create', routes.image.createImage);
 app.post('/image/delete/:id', routes.image.deleteImage);
 app.post('/image/update/:id', routes.image.updateImage);
