@@ -2,3 +2,14 @@ language: node_js
 node_js:
   - "node"
   - "8"
+env:
+  -MODE=travis
+  -HOST=http://localhost
+  -PORT=5050
+  -FLEXICAPTURE_HOST=https://flexi/api/v1/
+  -FLEXICAPTURE_USERNAME=username
+  -FLEXICAPTURE_PASSWORD=password
+  -GRAPHENEDB_URL=https://graphene.db
+  -GRAPHENEDB_BOLT_URL=bolt://graphene.db:24786
+  -GRAPHENEDB_BOLT_USER=user
+  -GRAPHENEDB_BOLT_PASSWORD=password
