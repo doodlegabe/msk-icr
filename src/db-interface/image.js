@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import Image from '../models/Image';
+import Image from '../models/image';
 
 const getImage = function (session, id) {
   return session.run('MATCH (i:Image {id:{id}}) RETURN i', {id: id})

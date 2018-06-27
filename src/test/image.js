@@ -3,8 +3,6 @@ import api from '../api'
 import Image from '../models/image';
 import dbConnect from '../db-connect';
 
-
-
 describe('Creating, Reading, Updating, and Deleting Images', function () {
   // it('creates an image from a valid post', function testCreateValid(done) {
   //   request(api)

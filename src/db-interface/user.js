@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import User from '../models/User';
+import User from '../models/user';
 
 const getUser = function (session, id) {
   return session.run('MATCH (u:User {id:{id}}) RETURN u', {id: id})

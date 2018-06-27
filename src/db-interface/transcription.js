@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import Transcription from '../models/Transcription';
+import Transcription from '../models/transcription';
 
 const getTranscription = function (session, id) {
   return session.run('MATCH (t:Transcription {id:{id}}) RETURN t', {id: id})
