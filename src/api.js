@@ -3,6 +3,7 @@ import express from 'express'
 import bodyParser from 'body-parser';
 import routes from './routes/index';
 import favicon from 'serve-favicon';
+import dbConnect from './db-connect';
 
 const app = express();
 const port = process.env.PORT || 5050;
@@ -11,6 +12,21 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(favicon('src/assets/favicons/favicon.ico'));
+//
+// let session = dbConnect.session();
+// session
+//   .run("CREATE (n {hello: 'Whirl'}) RETURN n.name")
+//   .then(function(result) {
+//     result.records.forEach(function(record) {
+//       console.log(record)
+//     });
+//
+//     session.close();
+//   })
+//   .catch(function(error) {
+//     console.log(error);
+//   });
+//
 
 /**
  * Routes
