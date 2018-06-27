@@ -147,4 +147,6 @@ vcs.xml
 # Sonarlint plugin
 .idea/sonarlint
 
+.env
+
 # End of https://www.gitignore.io/api/node,webstorm
