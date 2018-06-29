@@ -148,4 +148,5 @@ vcs.xml
 .idea/sonarlint
 # End of https://www.gitignore.io/api/node,webstorm
 
-tmp/
+tmp/*
+!tmp/.gitkeep
