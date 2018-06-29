@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import routes from './routes/index';
 import favicon from 'serve-favicon';
 let multer = require('multer');
-let upload = multer({ dest: 'src/uploads/tmp' });
+let upload = multer({ dest: '/tmp'});
 
 
 const app = express();
