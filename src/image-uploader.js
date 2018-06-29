@@ -7,10 +7,10 @@ cloudinary.config({
   api_secret:  process.env.CLOUDINARY_API_SECRET
 });
 
-const ImageUplodaer = function(file){
-  cloudinary.uploader.upload(file, function(result) {
-    return result;
-  });
-};
+const ImageUploader = cloudinary;
 
-module.exports = ImageUplodaer;
+module.exports = ImageUploader;
+
+exports.doClean = function (req, res, next) {
+
+};

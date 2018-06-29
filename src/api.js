@@ -3,12 +3,23 @@ import express from 'express'
 import bodyParser from 'body-parser';
 import routes from './routes/index';
 import favicon from 'serve-favicon';
+let multer = require('multer');
+let upload = multer({ dest: 'src/uploads/tmp' });
+
 
 const app = express();
 const port = process.env.PORT || 5050;
 
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  limit: '5mb',
+  parameterLimit: 100000,
+  extended: false
+}));
+app.use(bodyParser.json({
+  limit: '5mb',
+  type: 'application/*+json'
+}));
 app.use(express.static('public'));
 app.use(favicon('src/assets/favicons/favicon.ico'));
 
@@ -16,7 +27,8 @@ app.use(favicon('src/assets/favicons/favicon.ico'));
  * Initial Routes
  */
 app.get('/providers', routes.provider.getProviders);
-app.post('/transcribe', routes.transcribe.doTranscribe);
+app.post('/transcribe', upload.array('imageFile'), routes.transcribe.doTranscribeFileTemp);
+app.post('/delete-temp', routes.cleanUp.doClean);
 
 /**
  * Images

@@ -3,6 +3,8 @@
 require('dotenv').config('../../.env');
 import request from 'request-promise'
 import validUrl from 'valid-url'
+import ImageUploader from '../image-uploader';
+
 
 /**
  * Filter for showing only active services
@@ -12,7 +14,6 @@ import validUrl from 'valid-url'
 function activeProviderFilter (item){
   return Boolean(item.active);
 }
-
 /**
  * Validates the requested providers with the active/existing providers. Returns false if no problem or an error string
  * when problems occur.
@@ -35,7 +36,6 @@ function providerDoNotExist(providers, requestedProviders){
     return false;
   }
 }
-
 /**
  * Changes the requested providers to all valid providers.
  * @param providerResponse
@@ -50,7 +50,6 @@ function createAllProviderList(providerResponse){
   }
   return newProviders;
 }
-
 /**
  * Checks if Image URI is invalid and returns error if true.
  * @param uri
@@ -63,6 +62,8 @@ function invalidateImageUri(uri){
     return "Image URI, " + uri + ", appears to be invalid."
   }
 }
+
+//ToDo: Work with Image or file.
 
 exports.doTranscribe = function (req, res, next) {
   let payload = req.body;
@@ -109,3 +110,29 @@ exports.doTranscribe = function (req, res, next) {
   }
 };
 
+exports.doTranscribeFileTemp = function (req, res, next) {
+  let file = req.files[0].path;
+  ImageUploader.uploader.upload(file, function(result){
+    //ToDo: add signature check
+    if(result.url){
+      request({
+        "method":"POST",
+        "uri": process.env.HOST + ":" + process.env.PORT + "/delete-temp",
+        "json": true,
+        "headers": {
+          "User-Agent": "Self"
+        },
+        "body": {
+          "filePath": file
+        }
+      }).then(function(deletionResponse, err){
+        console.log(deletionResponse);
+        if(!err && deletionResponse.success){
+          res.status(200).send({image: result});
+        }
+      });
+    }else{
+      res.status(500).send({error: result});
+    }
+  });
+};
