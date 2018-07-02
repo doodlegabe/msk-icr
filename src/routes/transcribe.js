@@ -63,12 +63,21 @@ function invalidateImageUri(uri){
   }
 }
 
-//ToDo: Work with Image or file.
-
-exports.doTranscribe = function (req, res, next) {
+/**
+ * Transcribes an Image URI or Image file.
+ * @param req - Request Object
+ * @param res - Response Object
+ */
+exports.doTranscribe = function (req, res) {
   let payload = req.body;
   if(payload){
+    let file;
     const imageUri = payload.imageUri;
+    try{
+      file = req.files[0].path;
+    } catch (err){
+      file = null;
+    }
     if(imageUri){
       if(invalidateImageUri(imageUri)){
         let err = invalidateImageUri(imageUri);
@@ -84,55 +93,57 @@ exports.doTranscribe = function (req, res, next) {
         }).then(function(providerResponse, err){
           if(providerResponse){
             const requestedProviders = payload.providers;
-            if(!requestedProviders || requestedProviders.length === 0 || !Array.isArray(requestedProviders)){
+            if(!requestedProviders || requestedProviders.length === 0){
                 payload.providers = createAllProviderList(providerResponse);
             }else{
-              if(!providerDoNotExist(providerResponse,payload.providers)){
-
-                //Resume here.
-                res.status(200).send({success: true});
-
-              }else{
+              if(!Array.isArray(requestedProviders)){
+                payload.providers = [requestedProviders];
+              }
+              if(providerDoNotExist(providerResponse,payload.providers)){
                 err = providerDoNotExist(providerResponse,  payload.providers);
                 res.status(500).send({error: err});
               }
+            }
+            if(payload.providers){
+              res.status(200).send({success: true, message:'proceed from here'});
+            }else{
+              res.status(500).send({error: 'Unable to parse providers'});
             }
           }else{
             res.status(500).send({error: err});
           }
         });
       }
+    }else if(file){
+      ImageUploader.uploader.upload(file, function(result){
+        if(result.url){
+          request({
+            "method":"POST",
+            "uri": process.env.HOST + ":" + process.env.PORT + "/delete-temp",
+            "json": true,
+            "headers": {
+              "User-Agent": "Self"
+            },
+            "body": {
+              "filePath": file
+            }
+          }).then(function(deletionResponse, err){
+            if(!err && deletionResponse.success){
+
+              console.log('reached file');
+              res.status(201).send({image: result});
+
+
+            }
+          });
+        }else{
+          res.status(500).send({error: result});
+        }
+      });
     }else{
-      res.status(500).send({error: 'No image URI sent.'});
+      res.status(500).send({error: 'No image file or URI sent.'});
     }
   }else{
     res.status(500).send({error: 'Empty transcription request.'});
   }
-};
-
-exports.doTranscribeFileTemp = function (req, res, next) {
-  let file = req.files[0].path;
-  ImageUploader.uploader.upload(file, function(result){
-    //ToDo: add signature check
-    if(result.url){
-      request({
-        "method":"POST",
-        "uri": process.env.HOST + ":" + process.env.PORT + "/delete-temp",
-        "json": true,
-        "headers": {
-          "User-Agent": "Self"
-        },
-        "body": {
-          "filePath": file
-        }
-      }).then(function(deletionResponse, err){
-        console.log(deletionResponse);
-        if(!err && deletionResponse.success){
-          res.status(200).send({image: result});
-        }
-      });
-    }else{
-      res.status(500).send({error: result});
-    }
-  });
 };
