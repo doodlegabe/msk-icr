@@ -46,7 +46,7 @@ describe('Posting to /transcription valid and invalid providers', function () {
       .set('Accept', 'application/json')
       .send({
         "imageUri" : 'http://www.moleskine.com/image.jpeg',
-        "provider" : JSON.stringify('no')
+        "providers" : JSON.stringify(['no'])
       })
       .expect(500, done())
   });
@@ -56,11 +56,21 @@ describe('Posting to /transcription valid and invalid providers', function () {
       .set('Accept', 'application/json')
       .send({
         "imageUri" : 'http://www.moleskine.com/image.jpeg',
-        "provider" : JSON.stringify(['flexi'])
+        "providers" : JSON.stringify(['flexi'])
       })
       .expect(function(res){
         res.body.success = true;
       })
       .expect(200, {success: true}, done())
+  });
+  it('post string instead of an array', function testInvalidImageUri(done) {
+    request(api)
+      .post('/transcribe')
+      .set('Accept', 'application/json')
+      .send({
+        "imageUri" : 'http://www.moleskine.com/image.jpeg',
+        "providers" : JSON.stringify('no')
+      })
+      .expect(500, done())
   });
 });

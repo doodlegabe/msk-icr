@@ -27,7 +27,7 @@ app.use(favicon('src/assets/favicons/favicon.ico'));
  * Initial Routes
  */
 app.get('/providers', routes.provider.getProviders);
-app.post('/transcribe', upload.array('imageFile'), routes.transcribe.doTranscribeFileTemp);
+app.post('/transcribe', upload.array('imageFile'), routes.transcribe.doTranscribe);
 app.post('/delete-temp', routes.cleanUp.doClean);
 
 /**

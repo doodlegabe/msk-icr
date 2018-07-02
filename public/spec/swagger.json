@@ -65,13 +65,27 @@
           "provider"
         ],
         "summary": "Transcribes a photographed Moleskine Page.",
+        "consumes": [
+          "application/json",
+          "x-www-form-urlencoded"
+        ],
         "description": "Takes the request for a given image URI and provider and provides a transcription.",
         "operationId": "getTranscription",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "image",
+            "description": "TK",
+            "schema": {
+              "$ref": "#/definitions/Image"
+            }
+          }
+        ],
         "produces":[
           "application/json"
         ],
         "responses":{
-          "200":{
+          "201":{
             "description": "Successful transcription",
             "schema":{
               "type":"array",
@@ -103,6 +117,15 @@
     }
   },
   "definitions": {
+    "Image": {
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "type": "string",
+          "description": "URI of the photographed Notebook page"
+        }
+      }
+    },
     "Provider": {
       "type": "object",
       "properties": {
