@@ -42,6 +42,7 @@ exports.deleteUser = function (req, res, next) {
     .catch(next)
 };
 
+//ToDo Possibly remove
 exports.updateUser = function (req, res, next) {
   const id  = _.get(req.body,'id');
   Users.updateUser(dbConnect.getSession(req), id)

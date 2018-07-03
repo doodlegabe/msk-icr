@@ -1,5 +1,6 @@
 import request from 'supertest'
 import app from '../api'
+import providerData from '../seed-content/providers';
 
 
 describe('Posting to /transcription with valid and invalid imageUris', function () {

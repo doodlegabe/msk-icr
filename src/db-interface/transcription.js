@@ -10,11 +10,10 @@ const getTranscription = function (session, id) {
 
 const createTranscription = function (session, text, providerId, imageId) {
   const id = uuid.v4();
-  console.log('ToDo: refactor provider to use Id for matching #19');
   return session.run('CREATE (t:Transcription {id:{id}, text:{text}}) RETURN t', {id: id, text:text})
     .then(results => {
       const creationResults = results;
-      return session.run('MATCH (t:Transcription {id:{id}}) CREATE (image {id:{imageId}})<-[:TRANSCRIBES]-(t)', {id:id, imageId:imageId}
+      return session.run('MATCH (t:Transcription {id:{id}}) CREATE (image {id:{imageId}})<-[:TRANSCRIBES]-(t) CREATE (provider {id:{providerId}})<-[:TRANSCRIBED_BY]-(t)', {id:id, imageId:imageId, providerId: providerId }
       ).then(() => {
           return new Transcription(creationResults.records[0].get('t'));
         }
