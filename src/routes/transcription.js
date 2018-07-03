@@ -18,7 +18,10 @@ exports.getTranscription = function (req, res, next) {
 };
 
 exports.createTranscription = function (req, res, next) {
-  Transcriptions.createTranscription(dbConnect.getSession(req))
+  const text  = _.get(req.body,'text');
+  const providerId  = _.get(req.body,'providerId');
+  const imageId  = _.get(req.body,'imageId');
+  Transcriptions.createTranscription(dbConnect.getSession(req), text, providerId, imageId)
     .then(function(response){
       if(response.err){
         writeError(res, response.err, 500)
