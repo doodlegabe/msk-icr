@@ -5,5 +5,6 @@ exports.writeResponse = function writeResponse(res, response, status) {
 };
 
 exports.writeError = function writeError(res, error, status) {
-  res.status(error.status || status || 400).send(JSON.stringify(_.omit(error, ['status'])));
+  console.log('called', error, status);
+  res.status(error.status || status || 400).send(error);
 };

@@ -6,7 +6,6 @@ import favicon from 'serve-favicon';
 let multer = require('multer');
 let upload = multer({ dest: '/tmp'});
 
-
 const app = express();
 const port = process.env.PORT || 5050;
 
@@ -22,9 +21,15 @@ app.use(bodyParser.json({
 }));
 app.use(express.static('public'));
 app.use(favicon('src/assets/favicons/favicon.ico'));
-
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 /**
- * Initial Routes
+ * Main Routes
  */
 app.get('/providers', routes.provider.getProviders);
 app.post('/transcribe', upload.array('imageFile'), routes.transcribe.doTranscribe);

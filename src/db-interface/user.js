@@ -33,7 +33,7 @@ const updateUser = function (session, id) {
 };
 
 
-module.exprts = {
+module.exports = {
   getUser: getUser,
   createUser: createUser,
   deleteUser: deleteUser,
