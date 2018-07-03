@@ -33,7 +33,7 @@ const updateTranscription = function (session, id) {
 };
 
 
-module.exprts = {
+module.exports = {
   getTranscription: getTranscription,
   createTranscription: createTranscription,
   deleteTranscription: deleteTranscription,

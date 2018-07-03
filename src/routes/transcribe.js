@@ -76,43 +76,54 @@ function invalidateImageUri(uri){
 
 function transcribePerProvider(req, res){
 
-  // visionClient
-  //   .labelDetection({
-  //     image:{
-  //       source:{
-  //         imageUri: req.body.imageUri
-  //       }
-  //     }
-  //   })
-  //   .then(results => {
-  //     console.log(results);
-  //     const labels = results[0].labelAnnotations;
-  //
-  //     console.log('Labels:');
-  //     labels.forEach(label => console.log(label.description));
-  //   })
-  //   .catch(err => {
-  //     console.error('ERROR:', err);
-  //   });
 
-  visionClient
-    .textDetection({
+  if(req.body.providers.includes('google')){
+    // visionClient
+    //   .labelDetection({
+    //     image:{
+    //       source:{
+    //         imageUri: req.body.imageUri
+    //       }
+    //     }
+    //   })
+    //   .then(results => {
+    //     console.log(results);
+    //     const labels = results[0].labelAnnotations;
+    //
+    //     console.log('Labels:');
+    //     labels.forEach(label => console.log(label.description));
+    //   })
+    //   .catch(err => {
+    //     console.error('ERROR:', err);
+    //   });
+
+    visionClient
+      .textDetection({
         image:{
           source:{
             imageUri: req.body.imageUri
           }
         }
-   })
-    .then(results => {
-      console.log(results);
-      const transcriptions = results[0].textAnnotations;
-      let transcriptionResult = '';
-      transcriptions.forEach(txt => transcriptionResult += txt.description);
-      res.status(201).send({transcription: transcriptionResult});
-    })
-    .catch(err => {
-      console.error('ERROR:', err);
-    });
+      })
+      .then(results => {
+        console.log(results);
+        const transcriptions = results[0].textAnnotations;
+        let transcriptionResult = '';
+        transcriptions.forEach(txt => transcriptionResult += txt.description);
+        res.status(201).send({transcription: transcriptionResult});
+      })
+      .catch(err => {
+        console.error('ERROR:', err);
+      });
+  }
+
+  if(req.body.providers.includes('microsoft')){
+
+  }
+
+  if(req.body.providers.includes('flexi')){
+
+  }
 
 }
 
@@ -127,6 +138,9 @@ function preProcess(req, res){
       let err = invalidateImageUri(req.body.imageUri);
       res.status(500).send({error: err});
     }else{
+
+
+
       request({
         "method":"GET",
         "uri": process.env.HOST + ":" + process.env.PORT + "/providers",
@@ -157,6 +171,9 @@ function preProcess(req, res){
           res.status(500).send({error: err});
         }
       });
+
+
+
     }
   }else{
     res.status(500).send({error: 'No image file or URI sent.'});

@@ -1,4 +1,5 @@
 import uuid from 'uuid';
+import _ from 'lodash';
 import Image from '../models/image';
 
 const getImage = function (session, id) {
@@ -13,9 +14,9 @@ const createImage = function (session, uri) {
   return session.run('MATCH (i:Image {uri:{uri}}) RETURN i', {uri: uri})
     .then(results => {
       if (!_.isEmpty(results.records)) {
-        throw {url: 'Image already in use', status: 400}
+        return {err: 'Image at ' + uri + ' is already in use', status: 500}
       } else {
-        return session.run('CREATE (i:Image {id: {id} uri:{uri}, RETURN i ', {id: imageId, uri: uri})
+        return session.run('CREATE (i:Image {id:{id}, uri:{uri}}) RETURN i', {id: imageId, uri: uri})
           .then(result => {
             return new Image(result.records[0].get('i'));
           })
@@ -40,7 +41,7 @@ const updateImage = function (session, id, uri) {
 };
 
 
-module.exprts = {
+module.exports = {
   getImage: getImage,
   createImage: createImage,
   deleteImage: deleteImage,

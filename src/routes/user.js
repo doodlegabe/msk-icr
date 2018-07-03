@@ -1,31 +1,56 @@
 import dbConnect from '../db-connect';
-import User from '../db-interface/user';
-import writeResponse from '../db-interface/db-interface-helpers/response-helper';
+import Users from '../db-interface/user';
 import _ from 'lodash';
+const writeResponse = require('../db-interface/db-interface-helpers/response-helper').writeResponse;
+const writeError = require('../db-interface/db-interface-helpers/response-helper').writeError;
 
 exports.getUser = function (req, res, next) {
   const id  = _.get(req.body,'id');
-  User.getUser(dbConnect.getSession(req), id)
-    .then(response => writeResponse(res, response, 201))
+  Users.getUser(dbConnect.getSession(req), id)
+    .then(function(response){
+      if(response.err){
+        writeError(res, response.err, 500)
+      }else{
+        writeResponse(res, response, 201)
+      }
+    })
     .catch(next)
 };
 
 exports.createUser = function (req, res, next) {
-  User.createUser(dbConnect.getSession(req))
-    .then(response => writeResponse(res, response, 201))
+  Users.createUser(dbConnect.getSession(req))
+    .then(function(response){
+      if(response.err){
+        writeError(res, response.err, 500)
+      }else{
+        writeResponse(res, response, 201)
+      }
+    })
     .catch(next)
 };
 
 exports.deleteUser = function (req, res, next) {
   const id  = _.get(req.body,'id');
-  User.deleteUser(dbConnect.getSession(req), id)
-    .then(response => writeResponse(res, response, 201))
+  Users.deleteUser(dbConnect.getSession(req), id)
+    .then(function(response){
+      if(response.err){
+        writeError(res, response.err, 500)
+      }else{
+        writeResponse(res, response, 201)
+      }
+    })
     .catch(next)
 };
 
 exports.updateUser = function (req, res, next) {
   const id  = _.get(req.body,'id');
-  User.updateUser(dbConnect.getSession(req), id)
-    .then(response => writeResponse(res, response, 201))
+  Users.updateUser(dbConnect.getSession(req), id)
+    .then(function(response){
+      if(response.err){
+        writeError(res, response.err, 500)
+      }else{
+        writeResponse(res, response, 201)
+      }
+    })
     .catch(next)
 };
