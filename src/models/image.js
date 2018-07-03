@@ -7,4 +7,4 @@ function Image(_node){
   });
 }
 
-module.exports = Image;
+export default Image;

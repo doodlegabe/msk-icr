@@ -4,4 +4,4 @@ function User(_node){
   _.extend(this, _node.properties);
 }
 
-module.exports = User;
+export default User;
