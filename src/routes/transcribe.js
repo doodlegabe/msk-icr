@@ -6,6 +6,8 @@ import validUrl from 'valid-url'
 import ImageUploader from '../image-uploader';
 import vision from '@google-cloud/vision';
 
+import testing from '../seed-content/providers';
+
 let visionClient;
 if (process.env.MODE === 'local') {
   visionClient = new vision.ImageAnnotatorClient(
@@ -77,11 +79,26 @@ function invalidateImageUri(uri) {
   }
 }
 
+/**
+ * It returns an db id from an API id
+ * @param providers
+ * @param apiID
+ * @returns {*}
+ */
+function getIdFromApiId(providers, apiID){
+  console.log(providers.length);
+  for(let i=0; i<providers.length; i++){
+    if(providers[i].apiId === apiID){
+      return providers[i].id
+    }
+  }
+}
 
-function transcribePerProvider(req, res) {
 
+function transcribePerProvider(req, res, allProviders) {
 
   if (req.body.providers.includes('google')) {
+    const providerId = getIdFromApiId(allProviders, 'google');
     // visionClient
     //   .labelDetection({
     //     image:{
@@ -110,7 +127,6 @@ function transcribePerProvider(req, res) {
         }
       })
       .then(results => {
-        console.log(results);
         const transcriptions = results[0].textAnnotations;
         let transcriptionResult = '';
         transcriptions.forEach(txt => transcriptionResult += txt.description);
@@ -123,7 +139,8 @@ function transcribePerProvider(req, res) {
           },
           "body": {
             "text": transcriptionResult,
-            "imageId": req.body.imageId
+            "imageId": req.body.imageId,
+            "providerId": providerId
           }
         }).then(function (transcriptionCreationResponse, transcriptionCreationErr) {
           if (transcriptionCreationResponse) {
@@ -189,13 +206,13 @@ function preProcess(req, res) {
                 if (!Array.isArray(requestedProviders)) {
                   req.body.providers = [requestedProviders];
                 }
-                if (providerDoNotExist(providerResponse, req.body.providers)) {
-                  let noExistErr = providerDoNotExist(providerResponse, req.body.providers);
+                if (providerDoNotExist(providerResponse, req.body)) {
+                  let noExistErr = providerDoNotExist(providerResponse, req.body);
                   res.status(500).send({error: noExistErr});
                 }
               }
-              if (req.body.providers) {
-                transcribePerProvider(req, res);
+              if (requestedProviders) {
+                transcribePerProvider(req, res, providerResponse);
               } else {
                 res.status(500).send({error: 'Unable to parse providers'});
               }

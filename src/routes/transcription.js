@@ -46,7 +46,9 @@ exports.deleteTranscription = function (req, res, next) {
 };
 
 exports.updateTranscription = function (req, res, next) {
-  Transcriptions.updateTranscription(dbConnect.getSession(req), id)
+  const id  = _.get(req.body,'id');
+  const text  = _.get(req.body,'text');
+  Transcriptions.updateTranscription(dbConnect.getSession(req), id, text)
     .then(function(response){
       if(response.err){
         writeError(res, response.err, 500)
