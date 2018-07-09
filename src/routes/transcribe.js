@@ -5,8 +5,7 @@ import request from 'request-promise'
 import validUrl from 'valid-url'
 import ImageUploader from '../image-uploader';
 import vision from '@google-cloud/vision';
-
-import testing from '../seed-content/providers';
+import microsofComputerVision from 'microsoft-computer-vision';
 
 let visionClient;
 if (process.env.MODE === 'local') {
@@ -85,39 +84,35 @@ function invalidateImageUri(uri) {
  * @param apiID
  * @returns {*}
  */
-function getIdFromApiId(providers, apiID){
-  console.log(providers.length);
-  for(let i=0; i<providers.length; i++){
-    if(providers[i].apiId === apiID){
+function getIdFromApiId(providers, apiID) {
+  for (let i = 0; i < providers.length; i++) {
+    if (providers[i].apiId === apiID) {
       return providers[i].id
     }
   }
 }
 
+/**
+ * Changes object to transcription string.
+ * @param response
+ * @returns {string}
+ */
+function parseAzureResponse(response) {
+  const words = [];
+  for(let i=0; i<response.regions.length; i++){
+    for(let j=0; j<response.regions[i].lines.length; j++){
+      for(let k=0; k<response.regions[i].lines[j].words.length; k++){
+        words.push(response.regions[i].lines[j].words[k].text);
+      }
+    }
+  }
+  return words.join(' ');
+}
 
 function transcribePerProvider(req, res, allProviders) {
-
+  const transcriptionsContainer = [];
   if (req.body.providers.includes('google')) {
     const providerId = getIdFromApiId(allProviders, 'google');
-    // visionClient
-    //   .labelDetection({
-    //     image:{
-    //       source:{
-    //         imageUri: req.body.imageUri
-    //       }
-    //     }
-    //   })
-    //   .then(results => {
-    //     console.log(results);
-    //     const labels = results[0].labelAnnotations;
-    //
-    //     console.log('Labels:');
-    //     labels.forEach(label => console.log(label.description));
-    //   })
-    //   .catch(err => {
-    //     console.error('ERROR:', err);
-    //   });
-
     visionClient
       .textDetection({
         image: {
@@ -144,8 +139,12 @@ function transcribePerProvider(req, res, allProviders) {
           }
         }).then(function (transcriptionCreationResponse, transcriptionCreationErr) {
           if (transcriptionCreationResponse) {
-            //proceed from here.
-            res.status(201).send({transcription: transcriptionCreationResponse});
+
+            transcriptionsContainer.push(transcriptionCreationResponse);
+            if(transcriptionsContainer.length>=req.body.providers.length){
+              res.status(201).send({transcriptions: transcriptionsContainer});
+            }
+
           } else {
             res.status(500).send({error: transcriptionCreationErr});
           }
@@ -155,15 +154,52 @@ function transcribePerProvider(req, res, allProviders) {
         console.error('ERROR:', err);
       });
   }
-
   if (req.body.providers.includes('microsoft')) {
-
+    const providerId = getIdFromApiId(allProviders, 'microsoft');
+    microsofComputerVision.orcImage({
+      "Ocp-Apim-Subscription-Key": process.env.MICROSOFT_API_KEY_1,
+      "request-origin": process.env.MICROSOSFT_REQUEST_REGION,
+      "content-type": "application/json",
+      "url": req.body.imageUri,
+      "language": process.env.MICROSOFT_LANGUAGE,
+      "detect-orientation": true
+    }).then((result) => {
+      const transcriptions = parseAzureResponse(result);
+      request({
+        "method": "POST",
+        "uri": process.env.HOST + ":" + process.env.PORT + "/transcription/create",
+        "json": true,
+        "headers": {
+          "User-Agent": "Self"
+        },
+        "body": {
+          "text": transcriptions,
+          "imageId": req.body.imageId,
+          "providerId": providerId
+        }
+      }).then(function (transcriptionCreationResponse, transcriptionCreationErr) {
+        if (transcriptionCreationResponse) {
+          transcriptionsContainer.push(transcriptionCreationResponse);
+          if(transcriptionsContainer.length>=req.body.providers.length){
+            res.status(201).send({transcriptions: transcriptionsContainer});
+          }
+        } else {
+          res.status(500).send({error: transcriptionCreationErr});
+        }
+      })
+    })
+      .catch(err => {
+        console.error('ERROR:', err);
+      });
   }
-
   if (req.body.providers.includes('flexi')) {
+    transcriptionsContainer.push({id:'0',text:'placeholder'});
+    transcriptionsContainer.push(transcriptionCreationResponse);
+    if(transcriptionsContainer.length>=req.body.providers.length){
+      res.status(201).send({transcriptions: transcriptionsContainer});
+    }
 
   }
-
 }
 
 /**
@@ -229,7 +265,6 @@ function preProcess(req, res) {
     res.status(500).send({error: 'No image file or URI sent.'});
   }
 }
-
 
 /**
  * Transcribes an Image URI or Image file.
