@@ -109,15 +109,31 @@ function parseAzureResponse(response) {
   return words.join(' ');
 }
 
+/**
+ * Sends the final session back to the client.
+ * @param res
+ * @param transcriptions
+ * @param image
+ */
+function sendFinalResponse(res,transcriptions,image){
+  let data = {
+    transcriptions: transcriptions,
+    imageURI: image.imageURI,
+    imageId: image.imageId
+  };
+  res.status(201).send(data);
+}
+
 function transcribePerProvider(req, res, allProviders) {
   const transcriptionsContainer = [];
+  const imageUri = req.body.imageUri;
   if (req.body.providers.includes('google')) {
     const providerId = getIdFromApiId(allProviders, 'google');
     visionClient
       .textDetection({
         image: {
           source: {
-            imageUri: req.body.imageUri
+            imageUri: imageUri
           }
         }
       })
@@ -139,12 +155,11 @@ function transcribePerProvider(req, res, allProviders) {
           }
         }).then(function (transcriptionCreationResponse, transcriptionCreationErr) {
           if (transcriptionCreationResponse) {
-
-            transcriptionsContainer.push(transcriptionCreationResponse);
+            let transcriptionObj = {provider: 'google', id:transcriptionCreationResponse.id, text:transcriptionCreationResponse.text};
+            transcriptionsContainer.push(transcriptionObj);
             if(transcriptionsContainer.length>=req.body.providers.length){
-              res.status(201).send({transcriptions: transcriptionsContainer});
+              sendFinalResponse(res,transcriptionsContainer,{imageURI:imageUri,imageId: req.body.imageId})
             }
-
           } else {
             res.status(500).send({error: transcriptionCreationErr});
           }
@@ -160,7 +175,7 @@ function transcribePerProvider(req, res, allProviders) {
       "Ocp-Apim-Subscription-Key": process.env.MICROSOFT_API_KEY_1,
       "request-origin": process.env.MICROSOSFT_REQUEST_REGION,
       "content-type": "application/json",
-      "url": req.body.imageUri,
+      "url": imageUri,
       "language": process.env.MICROSOFT_LANGUAGE,
       "detect-orientation": true
     }).then((result) => {
@@ -179,9 +194,10 @@ function transcribePerProvider(req, res, allProviders) {
         }
       }).then(function (transcriptionCreationResponse, transcriptionCreationErr) {
         if (transcriptionCreationResponse) {
-          transcriptionsContainer.push(transcriptionCreationResponse);
+          let transcriptionObj = {provider: 'microsoft', id:transcriptionCreationResponse.id, text:transcriptionCreationResponse.text};
+          transcriptionsContainer.push(transcriptionObj);
           if(transcriptionsContainer.length>=req.body.providers.length){
-            res.status(201).send({transcriptions: transcriptionsContainer});
+            sendFinalResponse(res,transcriptionsContainer,{imageURI:imageUri,imageId: req.body.imageId})
           }
         } else {
           res.status(500).send({error: transcriptionCreationErr});
@@ -193,12 +209,10 @@ function transcribePerProvider(req, res, allProviders) {
       });
   }
   if (req.body.providers.includes('flexi')) {
-    transcriptionsContainer.push({id:'0',text:'placeholder'});
-    transcriptionsContainer.push(transcriptionCreationResponse);
+    transcriptionsContainer.push({provider:'flexi',id:'0',text:'placeholder'});
     if(transcriptionsContainer.length>=req.body.providers.length){
-      res.status(201).send({transcriptions: transcriptionsContainer});
+      sendFinalResponse(res,transcriptionsContainer,{imageURI:imageUri,imageId: req.body.imageId})
     }
-
   }
 }
 
