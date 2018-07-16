@@ -10,6 +10,7 @@ const getImage = function (session, id) {
 };
 
 const createImage = function (session, uri) {
+  console.log(uri);
   const imageId = uuid.v4();
   return session.run('MATCH (i:Image {uri:{uri}}) RETURN i', {uri: uri})
     .then(results => {

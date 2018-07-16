@@ -39,6 +39,12 @@
             "schema": {
               "$ref": "#/definitions/Image"
             }
+          },
+          {
+            "in": "body",
+            "name": "imageFile",
+            "description": "JPEG needing to be transcribed",
+            "type": "binary"
           }
         ],
         "produces":[
