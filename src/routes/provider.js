@@ -1,6 +1,5 @@
 import dbConnect from '../db-connect';
 import Providers from '../db-interface/provider';
-import _ from 'lodash';
 const writeResponse = require('../db-interface/db-interface-helpers/response-helper').writeResponse;
 const writeError = require('../db-interface/db-interface-helpers/response-helper').writeError;
 import providerSeedData from '../seed-content/providers'
@@ -18,7 +17,7 @@ exports.getProviders = function (req, res, next) {
 };
 
 exports.getProvider = function (req, res, next) {
-  const id  = _.get(req.body,'id');
+  const id  = req.params.id;
   Providers.getProvider(dbConnect.getSession(req), id)
     .then(function(response){
       if(response.err){
@@ -31,11 +30,11 @@ exports.getProvider = function (req, res, next) {
 };
 
 exports.createProvider = function (req, res, next) {
-  const apiId  = _.get(req.body,'apiId');
-  const name  = _.get(req.body,'name');
-  const description  = _.get(req.body,'description');
-  const documentation  = _.get(req.body,'documentation');
-  const active  = _.get(req.body,'active');
+  const apiId  = req.params.apiId;
+  const name  = req.params.name;
+  const description  = req.params.description;
+  const documentation  = req.params.documentation;
+  const active  = req.params.active;
   Providers.createProvider(dbConnect.getSession(req), apiId, name, description, documentation, active)
     .then(function(response){
       if(response.err){
@@ -48,12 +47,12 @@ exports.createProvider = function (req, res, next) {
 };
 
 exports.updateProvider = function (req, res, next) {
-  const id  = _.get(req.body,'id');
-  const apiId  = _.get(req.body,'apiId');
-  const name  = _.get(req.body,'name');
-  const description  = _.get(req.body,'description');
-  const documentation  = _.get(req.body,'documentation');
-  const active  = _.get(req.body,'active');
+  const id  = req.params.id;
+  const apiId  = req.params.apiId;
+  const name  = req.params.name;
+  const description  = req.params.description;
+  const documentation  = req.params.documentation;
+  const active  = req.params.active;
   Providers.updateProvider(dbConnect.getSession(req), id, apiId, name, description, documentation, active)
     .then(function(response){
       if(response.err){
@@ -66,7 +65,7 @@ exports.updateProvider = function (req, res, next) {
 };
 
 exports.deleteProvider = function (req, res, next) {
-  const id  = _.get(req.body,'id');
+  const id  = req.params.id;
   Providers.deleteProvider(dbConnect.getSession(req), id)
     .then(function(response){
       if(response.err){
