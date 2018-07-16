@@ -14,17 +14,250 @@
   },
   "host": "msk-icr.herokuapp.com",
   "basePath": "/",
-  "tags": [
-    {
-      "name": "provider",
-      "description": "Cloud-based ICR and NLP providers."
-    }
-  ],
   "schemes": [
-    "https"
+    "https",
+    "http"
   ],
   "paths": {
-    "/get-providers": {
+    "/transcribe":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Transcribes a photographed Moleskine Page.",
+        "consumes": [
+          "application/json",
+          "x-www-form-urlencoded"
+        ],
+        "description": "Takes the request for a given image URI and provider and provides a transcription.",
+        "operationId": "getTranscription",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "imageUri",
+            "description": "The URI of the image to be transcribed.",
+            "schema": {
+              "$ref": "#/definitions/Image"
+            }
+          },
+          {
+            "in": "body",
+            "name": "imageFile",
+            "description": "JPEG needing to be transcribed",
+            "type": "binary"
+          }
+        ],
+        "produces":[
+          "application/json"
+        ],
+        "responses":{
+          "201":{
+            "description": "Successful transcription",
+            "schema":{
+              "type":"array",
+              "items": {
+                "$ref": "#/definitions/Transcription"
+              }
+            }
+          },
+          "500":{
+            "description": "Server error"
+          }
+        }
+      },
+      "security": [
+        {
+          "user_auth": [
+            "read:providers"
+          ]
+        }
+      ]
+    },
+    "/image":{
+      "get":{
+        "tags": [
+          "image"
+        ],
+        "operationId": "getImage",
+        "summary": "Retrieves an image given an id.",
+        "produces":[
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name":"id",
+            "in":"query",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses":{
+          "200":{
+            "description": "Successful retrieval",
+            "schema":{
+                "$ref": "#/definitions/Image"
+            }
+          },
+          "500":{
+            "description": "Error"
+          }
+        }
+      },
+      "security": [
+        {
+          "user_auth": [
+            "read:providers"
+          ]
+        }
+      ]
+    },
+    "/image/create":{
+      "post":{
+        "tags": [
+          "image"
+        ],
+        "summary": "Create Image",
+        "description": "Create an image record in the db",
+        "operationId": "createImage",
+        "produces": [
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name":"uri",
+            "in":"query",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses":{
+          "200":{
+            "description": "Successful creation",
+            "schema":{
+              "$ref": "#/definitions/Image"
+            }
+          },
+          "500":{
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/image/delete":{
+      "post":{
+        "tags": [
+          "image"
+        ],
+        "summary": "Delete Image",
+        "description": "Deletes an image record in the db",
+        "operationId": "deleteImage",
+        "produces":[
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name":"id",
+            "in":"query",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses":{
+          "200":{
+            "description": "Successful Deletion"
+          },
+          "500":{
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/image/update":{
+      "post":{
+        "tags": [
+          "image"
+        ],
+        "summary": "Update Image",
+        "description": "Updates an image record in the db",
+        "operationId": "updateImage",
+        "produces":[
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name":"id",
+            "in":"query",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name":"uri",
+            "in":"query",
+            "required": "false",
+            "type": "string"
+          }
+        ],
+        "responses":{
+          "200":{
+            "description": "Successful update",
+            "schema":{
+              "$ref": "#/definitions/Image"
+            }
+          },
+          "500":{
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/delete-temp":{
+      "post":{
+        "tags": [
+          "image",
+          "file"
+        ],
+        "summary": "Delete Temp",
+        "description": "Deletes a temporary upload file in the /tmp directory",
+        "operationId": "deleteImage",
+        "responses":{
+          "200":{
+            "description": "Successful deletion"
+          },
+          "500":{
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/providers":{
       "get": {
         "tags": [
           "provider"
@@ -47,6 +280,9 @@
           },
           "400": {
             "description": "Invalid status value"
+          },
+          "500": {
+            "description": "Server Error"
           }
         },
         "security": [
@@ -58,46 +294,278 @@
         ]
       }
     },
-    "/transcribe":{
+    "/providers/seed":{
       "post":{
         "tags": [
-          "transcription",
           "provider"
         ],
-        "summary": "Transcribes a photographed Moleskine Page.",
-        "consumes": [
-          "application/json",
-          "x-www-form-urlencoded"
-        ],
-        "description": "Takes the request for a given image URI and provider and provides a transcription.",
-        "operationId": "getTranscription",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "image",
-            "description": "TK",
-            "schema": {
-              "$ref": "#/definitions/Image"
-            }
-          }
-        ],
-        "produces":[
+        "summary": "Seed Providers",
+        "description": "Seeds provides from preset JSON..",
+        "operationId": "seedProviders",
+        "produces": [
           "application/json"
         ],
         "responses":{
-          "201":{
-            "description": "Successful transcription",
-            "schema":{
-              "type":"array",
+          "200":{
+            "description": "Successful seeding",
+            "schema": {
+              "type": "array",
               "items": {
-                "$ref": "#/definitions/Transcription"
+                "$ref": "#/definitions/Provider"
               }
             }
           },
           "500":{
             "description": "Error"
           }
-        }
+        },
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/provider/":{
+      "post":{
+        "tags": [
+          "provider"
+        ],
+        "summary": "Get Provider",
+        "description": "Retrieves a provider given a specific id.",
+        "operationId": "getProvider",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/provider/create":{
+      "post":{
+        "tags": [
+          "provider"
+        ],
+        "summary": "Create Provider",
+        "description": "Creates a new Provider",
+        "operationId": "createProvider",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/provider/delete":{
+      "post":{
+        "tags": [
+          "provider"
+        ],
+        "summary": "Delete Provider",
+        "description": "Deletes a new Provider",
+        "operationId": "deleteProvider",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/provider/update":{
+      "post":{
+        "tags": [
+          "provider"
+        ],
+        "summary": "Update Provider",
+        "description": "Updates a given Provider",
+        "operationId": "updateProvider",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/transcription":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Get Transcription",
+        "description": "Gets a given Transcription",
+        "operationId": "getTranscription",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/transcription/create":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Create Transcription",
+        "description": "Creates a newTranscription",
+        "operationId": "createTranscription",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/transcription/delete":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Delete Transcription",
+        "description": "Deletes a given Transcription",
+        "operationId": "deleteTranscription",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/transcription/update":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Update Transcription",
+        "description": "Updates a given Transcription",
+        "operationId": "updateTranscription",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/user":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Get User",
+        "description": "Gets a given user",
+        "operationId": "getUser",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/user/create":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Create User",
+        "description": "Creates a new user",
+        "operationId": "createUser",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/user/delete":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Delete User",
+        "description": "Deletes a given user",
+        "operationId": "deleteUser",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
+      }
+    },
+    "/user/update":{
+      "post":{
+        "tags": [
+          "transcription"
+        ],
+        "summary": "Update User",
+        "description": "Updates a given user",
+        "operationId": "updateUser",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "user_auth": [
+              "read:providers"
+            ]
+          }
+        ]
       }
     }
   },
@@ -120,9 +588,13 @@
     "Image": {
       "type": "object",
       "properties": {
-        "imageUri": {
+        "uri": {
           "type": "string",
           "description": "URI of the photographed Notebook page"
+        },
+        "id":{
+          "type": "string",
+          "description": "Id of the image record."
         }
       }
     },
@@ -154,13 +626,19 @@
     "Transcription":{
       "type": "object",
       "properties": {
-        "apiId": {
+        "provider": {
           "type": "string",
-          "description": "API id for each provider passed during transcription."
+          "description": {
+            "$ref": "#/definitions/Provider"
+          }
         },
-        "result":{
+        "id":{
           "type":"string",
-          "description": "TETD"
+          "description": "ID of transcription object."
+        },
+        "text":{
+          "type":"string",
+          "description": "Text transcribed from image"
         }
       }
     }

@@ -1,10 +1,11 @@
 import dbConnect from '../db-connect';
 import Users from '../db-interface/user';
+import _ from 'lodash';
 const writeResponse = require('../db-interface/db-interface-helpers/response-helper').writeResponse;
 const writeError = require('../db-interface/db-interface-helpers/response-helper').writeError;
 
 exports.getUser = function (req, res, next) {
-  const id  = req.params.id;
+  const id  = _.get(req.body,'id');
   Users.getUser(dbConnect.getSession(req), id)
     .then(function(response){
       if(response.err){
@@ -29,7 +30,7 @@ exports.createUser = function (req, res, next) {
 };
 
 exports.deleteUser = function (req, res, next) {
-  const id  = req.params.id;
+  const id  = _.get(req.body,'id');
   Users.deleteUser(dbConnect.getSession(req), id)
     .then(function(response){
       if(response.err){
@@ -43,7 +44,7 @@ exports.deleteUser = function (req, res, next) {
 
 //ToDo Possibly remove
 exports.updateUser = function (req, res, next) {
-  const id  = req.params.id;
+  const id  = _.get(req.body,'id');
   Users.updateUser(dbConnect.getSession(req), id)
     .then(function(response){
       if(response.err){
