@@ -7,17 +7,16 @@ import ImageUploader from '../image-uploader';
 import vision from '@google-cloud/vision';
 import microsofComputerVision from 'microsoft-computer-vision';
 
-let visionClient, API_URL;
+let visionClient;
 
 if (process.env.MODE === 'local') {
-  API_URL = process.env.HOST + ":" + process.env.PORT;
+  let API_URL = process.env.HOST + ":" + process.env.PORT;
   visionClient = new vision.ImageAnnotatorClient(
     {
       keyFilename: 'google-creds.json'
     }
   );
 } else {
-  API_URL = process.env.HOST;
   visionClient = new vision.ImageAnnotatorClient();
 }
 
@@ -146,7 +145,7 @@ function transcribePerProvider(req, res, allProviders) {
         transcriptions.forEach(txt => transcriptionResult += txt.description);
         request({
           "method": "POST",
-          "uri": API_URL + "/transcription/create",
+          "uri": process.env.HOST + ":" + process.env.PORT + "/transcription/create",
           "json": true,
           "headers": {
             "User-Agent": "Self"
@@ -185,7 +184,7 @@ function transcribePerProvider(req, res, allProviders) {
       const transcriptions = parseAzureResponse(result);
       request({
         "method": "POST",
-        "uri":API_URL + "/transcription/create",
+        "uri": process.env.HOST + ":" + process.env.PORT + "/transcription/create",
         "json": true,
         "headers": {
           "User-Agent": "Self"
@@ -233,7 +232,7 @@ function preProcess(req, res) {
     } else {
       request({
         "method": "POST",
-        "uri": API_URL + "/image/create",
+        "uri": process.env.HOST + ":" + process.env.PORT + "/image/create",
         "json": true,
         "headers": {
           "User-Agent": "Self"
@@ -246,7 +245,7 @@ function preProcess(req, res) {
           req.body.imageId = imageCreationResponse.id;
           request({
             "method": "GET",
-            "uri": API_URL + "/providers",
+            "uri": process.env.HOST + ":" + process.env.PORT + "/providers",
             "json": true,
             "headers": {
               "User-Agent": "Self"
@@ -302,7 +301,7 @@ exports.doTranscribe = function (req, res) {
       if (result.url) {
         request({
           "method": "POST",
-          "uri": API_URL + "/delete-temp",
+          "uri": process.env.HOST + ":" + process.env.PORT + "/delete-temp",
           "json": true,
           "headers": {
             "User-Agent": "Self"
